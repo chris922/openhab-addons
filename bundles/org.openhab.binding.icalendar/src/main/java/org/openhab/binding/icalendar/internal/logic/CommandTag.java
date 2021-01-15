@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -30,6 +31,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.TypeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import tec.uom.se.AbstractUnit;
 
 /**
  * This is a class that implements a Command Tag that may be embedded in an
@@ -134,6 +137,10 @@ public class CommandTag {
         if (theCommand == null) {
             // TypeParser.parseCommand(otherCommandTypes should always succeed (with new StringType())
             theCommand = TypeParser.parseCommand(otherCommandTypes, targetState);
+        }
+
+        if (theCommand instanceof QuantityType && AbstractUnit.ONE.equals(((QuantityType<?>) theCommand).getUnit())) {
+            theCommand = ((QuantityType<?>) theCommand).as(DecimalType.class);
         }
 
         if (fields.length == 4) {
